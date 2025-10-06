@@ -180,23 +180,9 @@ claude mcp list
 
 5. The Healthie MCP server will now be available when using Claude Code CLI
 
-### OpenAI (via MCP Bridge)
+### OpenAI
 
-Since OpenAI doesn't natively support MCP, you'll need to use an MCP bridge:
-
-1. Install the OpenAI MCP bridge:
-```bash
-npm install -g @modelcontextprotocol/bridge-openai
-```
-
-2. Start the bridge with Healthie Dev Assist:
-```bash
-mcp-bridge-openai \
-  --server-command "node /path/to/healthie-dev-assist/setup.js" \
-  --openai-api-key "your-openai-api-key"
-```
-
-3. The bridge will provide an endpoint you can use with OpenAI's API
+**Note**: OpenAI does not currently support local MCP servers. For information on using remote MCP servers with OpenAI, see the [OpenAI MCP documentation](https://platform.openai.com/docs/guides/mcp).
 
 ### Cursor
 
