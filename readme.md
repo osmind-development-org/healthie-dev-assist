@@ -276,11 +276,11 @@ This will fetch the latest schema from the staging API and save it locally.
 
 ## License
 
-The apollo-mcp-server binary included here comes from https://github.com/apollographql/apollo-mcp-server (current included version is v0.3.0) and is distributed under the [Elasic License 2.0](https://github.com/apollographql/apollo-mcp-server/blob/main/LICENSE)
+The apollo-mcp-server binary included here comes from https://github.com/apollographql/apollo-mcp-server (current included version is v0.5.2) and is distributed under the [MIT License](https://github.com/apollographql/apollo-mcp-server/blob/main/LICENSE)
 
 
 ## Support
 
 For issues and questions:
 - [GitHub Issues](https://github.com/healthie/healthie-dev-assist/issues)
-- [Healthie API Documentation][https://docs.gethealthie.com/guides/intro/]
+- [Healthie API Documentation](https://docs.gethealthie.com/guides/intro/)
