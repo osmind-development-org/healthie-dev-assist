@@ -45,15 +45,18 @@ if (API_KEY) {
     options.headers['AuthorizationSource'] = 'API';
 }
 
-console.log('Fetching schema from Healthie API...');
+// Add API version header
+options.headers['Healthie-GraphQL-API-Version'] = API_VERSION;
+
+console.log(`Fetching schema from Healthie API (API Version: ${API_VERSION})...`);
 
 const req = https.request(options, (res) => {
     let data = '';
-    
+
     res.on('data', (chunk) => {
         data += chunk;
     });
-    
+
     res.on('end', () => {
         try {
             const result = JSON.parse(data);
@@ -61,17 +64,17 @@ const req = https.request(options, (res) => {
                 console.error(`${RED}GraphQL errors:${NC}`, result.errors);
                 process.exit(1);
             }
-            
+
             const schema = buildClientSchema(result.data);
             const sdl = printSchema(schema);
-            
+
             fs.writeFileSync(SCHEMA_FILE, sdl);
             console.log(`${GREEN}✓ Schema downloaded and converted to SDL format successfully${NC}`);
             console.log(`${GREEN}✓ Schema saved to: ${SCHEMA_FILE}${NC}`);
-            
+
             // Save introspection result for reference
-            const introspectionFile = ENVIRONMENT === 'default' 
-                ? 'introspection-result.json' 
+            const introspectionFile = ENVIRONMENT === 'default'
+                ? 'introspection-result.json'
                 : `introspection-result-${ENVIRONMENT}.json`;
             fs.writeFileSync(path.join(SCHEMA_DIR, introspectionFile), JSON.stringify(result, null, 2));
         } catch (error) {

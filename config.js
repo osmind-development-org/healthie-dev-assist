@@ -4,7 +4,7 @@ const path = require('path');
 function getEnvironmentConfig() {
   const environmentsFile = path.join(__dirname, 'environments.json');
   const selectedEnv = process.env.HEALTHIE_ENV;
-  
+
   // If no HEALTHIE_ENV specified or no environments.json file, use default
   if (!selectedEnv || !fs.existsSync(environmentsFile)) {
     return {
@@ -13,15 +13,15 @@ function getEnvironmentConfig() {
       schemaFile: './schemas/healthie-schema.graphql'
     };
   }
-  
+
   // Load environments configuration
   try {
     const environments = JSON.parse(fs.readFileSync(environmentsFile, 'utf8'));
-    
+
     if (!environments[selectedEnv]) {
       throw new Error(`Environment "${selectedEnv}" not found in environments.json`);
     }
-    
+
     const envConfig = environments[selectedEnv];
     return {
       endpoint: envConfig.endpoint,
