@@ -7,7 +7,7 @@ const { buildClientSchema, printSchema, getIntrospectionQuery } = require('graph
 const config = require('./config');
 
 // Configuration
-const { SCHEMA_URL, SCHEMA_DIR, SCHEMA_FILE, API_KEY, ENVIRONMENT } = config;
+const { SCHEMA_URL, SCHEMA_DIR, SCHEMA_FILE, API_KEY, API_VERSION, ENVIRONMENT } = config;
 
 // Colors for output
 const GREEN = '\x1b[32m';

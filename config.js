@@ -42,5 +42,6 @@ module.exports = {
   SCHEMA_FILE: envConfig.schemaFile,
   MCP_SERVER_PATH: './apollo-mcp-server',
   API_KEY: envConfig.apiKey,
+  API_VERSION: process.env.HEALTHIE_API_VERSION || '2025-11-30',
   ENVIRONMENT: process.env.HEALTHIE_ENV || 'default'
 };
