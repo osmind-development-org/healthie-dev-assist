@@ -165,12 +165,12 @@ npm install -g @anthropic-ai/claude-code
 
 2. Add the MCP server using the `claude mcp add` command:
 ```bash
-claude mcp add healthie-dev-assist "node /path/to/healthie-dev-assist/setup.js"
+claude mcp add healthie-dev-assist $(which node) /absolute/path/to/healthie-dev-assist/setup.js
 ```
 
 3. If you need to set the API key, you can add it with environment variables:
 ```bash
-claude mcp add healthie-dev-assist "node /path/to/healthie-dev-assist/setup.js" --env HEALTHIE_API_KEY=your-api-key-here
+claude mcp add healthie-dev-assist $(which node) /absolute/path/to/healthie-dev-assist/setup.js --env HEALTHIE_API_KEY=your-api-key-here
 ```
 
 4. Verify the MCP server is installed:
