@@ -8,7 +8,7 @@ import { resolve, dirname } from "path";
 import { homedir } from "os";
 
 const projectRoot = resolve(import.meta.dirname);
-const serverPath = resolve(projectRoot, "src", "server.ts");
+const startScriptPath = resolve(projectRoot, "start-mcp.sh");
 
 // ── Locate Claude Desktop config ──────────────────────────────────────────────
 
@@ -63,8 +63,7 @@ const mcpServers = config.mcpServers as Record<string, unknown>;
 
 const existing = mcpServers["healthie"];
 mcpServers["healthie"] = {
-  command: "npx",
-  args: ["tsx", serverPath],
+  command: startScriptPath,
 };
 
 // ── Write back ────────────────────────────────────────────────────────────────

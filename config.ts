@@ -1,8 +1,11 @@
 import { readFileSync, existsSync } from "fs";
-import { resolve } from "path";
+import { resolve, dirname } from "path";
+import { fileURLToPath } from "url";
 import dotenv from "dotenv";
 
-dotenv.config({ path: resolve(import.meta.dirname, ".env") });
+const __dirname = dirname(fileURLToPath(import.meta.url));
+
+dotenv.config({ path: resolve(__dirname, ".env") });
 
 export interface EnvConfig {
   apiUrl: string;
@@ -18,13 +21,13 @@ const API_URLS: Record<string, string> = {
 
 function loadConfig(): EnvConfig {
   const envName = process.env.HEALTHIE_ENV ?? "staging";
-  const schemasDir = resolve(import.meta.dirname, "schemas");
+  const schemasDir = resolve(__dirname, "schemas");
   const schemaPath = resolve(schemasDir, `${envName}.graphql`);
 
   // Try environments.json first (multi-env support)
   const envFilePath = process.env.ENVIRONMENTS_FILE
     ? resolve(process.env.ENVIRONMENTS_FILE)
-    : resolve(import.meta.dirname, "environments.json");
+    : resolve(__dirname, "environments.json");
 
   if (existsSync(envFilePath)) {
     const envFile = JSON.parse(readFileSync(envFilePath, "utf-8"));

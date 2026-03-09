@@ -6,7 +6,9 @@
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ENTRY_SCRIPT="$SCRIPT_DIR/src/server.ts"
 
-NPX_BIN=$(command -v npx) || { echo "Error: npx not found. Please install Node.js."; exit 1; }
+TSX_BIN="$SCRIPT_DIR/node_modules/.bin/tsx"
+[ -x "$TSX_BIN" ] || { echo "Error: tsx not found. Run 'npm install' in $SCRIPT_DIR"; exit 1; }
 [ -f "$ENTRY_SCRIPT" ] || { echo "Error: server.ts not found at $ENTRY_SCRIPT"; exit 1; }
 
-exec "$NPX_BIN" tsx "$ENTRY_SCRIPT" "$@"
+cd "$SCRIPT_DIR"
+exec "$TSX_BIN" "$ENTRY_SCRIPT" "$@"
