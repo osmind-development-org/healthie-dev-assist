@@ -328,6 +328,7 @@ async function executeGraphQL<T>(
     headers: {
       "Content-Type": "application/json",
       Authorization: `Basic ${config.apiKey}`,
+      AuthorizationSource: "API",
     },
     body,
   });
