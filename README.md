@@ -127,7 +127,7 @@ Add to Cursor's MCP settings:
 {
   "mcp": {
     "servers": {
-      "healthie": {
+      "healthie-dev-assist": {
         "command": "npx",
         "args": ["tsx", "/path/to/healthie-dev-assist/src/server.ts"]
       }
@@ -148,6 +148,26 @@ npm run build
 Then use `node /path/to/healthie-dev-assist/dist/server.js` in place of `npx tsx ...` in any config above.
 
 </details>
+
+---
+
+## Upgrading from v1 (macOS)
+
+Run this single command in your terminal:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/healthie/healthie-dev-assist/main/upgrade.sh | bash
+```
+
+This will automatically:
+- Find your existing installation
+- Download the latest version
+- Preserve your API key
+- Update your Claude Desktop configuration
+
+Restart Claude Desktop after it completes.
+
+> **Other platforms:** Pull the latest code manually, then run `npm run setup` from the project directory.
 
 ---
 
