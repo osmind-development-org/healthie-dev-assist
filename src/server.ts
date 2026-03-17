@@ -9,22 +9,58 @@ import {
 import { z } from "zod";
 import { executeInSandbox } from "./sandbox.js";
 import { SYSTEM_PROMPT, TOOL_TYPE_HINT } from "./types.js";
-import { schemaExists } from "./schema.js";
+import {
+  schemaExists,
+  schemaIsStale,
+  schemaAgeDays,
+  regenerateSchema,
+} from "./schema.js";
 import { config } from "../config.js";
 
-// ── Auto-regenerate schema on startup if missing ──────────────────────────────
+// ── Auto-regenerate schema on startup if missing or stale ─────────────────────
 
 async function ensureSchema(): Promise<void> {
   if (!schemaExists()) {
     console.error(
       `[healthie-dev-assist] Schema not found at ${config.schemaPath}`
     );
+    if (config.apiKey) {
+      console.error("[healthie-dev-assist] Fetching schema via introspection...");
+      try {
+        const result = await regenerateSchema();
+        console.error(
+          `[healthie-dev-assist] Schema saved to ${result.path} (${result.lines} lines)`
+        );
+      } catch (err) {
+        console.error(
+          `[healthie-dev-assist] Failed to fetch schema: ${err instanceof Error ? err.message : err}`
+        );
+        console.error(
+          "[healthie-dev-assist] Starting without schema — tools will fail until schema is generated."
+        );
+      }
+    } else {
+      console.error(
+        "[healthie-dev-assist] No API key configured. Run: npm run regenerate-schema"
+      );
+    }
+  } else if (schemaIsStale()) {
+    const age = Math.round(schemaAgeDays());
     console.error(
-      "[healthie-dev-assist] Run: npm run regenerate-schema"
+      `[healthie-dev-assist] Schema is ${age} day(s) old — refreshing in background...`
     );
-    console.error(
-      "[healthie-dev-assist] Starting without schema — tools will fail until schema is generated."
-    );
+    // Non-blocking: refresh in background so MCP starts immediately
+    regenerateSchema()
+      .then((result) =>
+        console.error(
+          `[healthie-dev-assist] Schema refreshed: ${result.path} (${result.lines} lines)`
+        )
+      )
+      .catch((err) =>
+        console.error(
+          `[healthie-dev-assist] Background schema refresh failed: ${err instanceof Error ? err.message : err}`
+        )
+      );
   } else {
     console.error(
       `[healthie-dev-assist] Schema loaded from ${config.schemaPath} (env: ${config.envName})`
@@ -84,6 +120,15 @@ Examples:
         required: ["code"],
       },
     },
+    {
+      name: "regenerate_schema",
+      description:
+        "Re-fetch the Healthie GraphQL schema from the live API via introspection. Use this when you encounter types or fields that seem missing or outdated, or when the user asks you to refresh the schema.",
+      inputSchema: {
+        type: "object",
+        properties: {},
+      },
+    },
   ],
 }));
 
@@ -92,39 +137,65 @@ const ExecuteCodeSchema = z.object({
 });
 
 server.setRequestHandler(CallToolRequestSchema, async (request) => {
-  if (request.params.name !== "execute_healthie_code") {
-    throw new Error(`Unknown tool: ${request.params.name}`);
+  const { name } = request.params;
+
+  if (name === "regenerate_schema") {
+    try {
+      const result = await regenerateSchema();
+      return {
+        content: [
+          {
+            type: "text",
+            text: `Schema refreshed from ${config.apiUrl}.\nSaved to ${result.path} (${result.lines} lines).`,
+          },
+        ],
+      };
+    } catch (err) {
+      return {
+        content: [
+          {
+            type: "text",
+            text: `Failed to regenerate schema: ${err instanceof Error ? err.message : err}`,
+          },
+        ],
+        isError: true,
+      };
+    }
   }
 
-  const { code } = ExecuteCodeSchema.parse(request.params.arguments);
+  if (name === "execute_healthie_code") {
+    const { code } = ExecuteCodeSchema.parse(request.params.arguments);
 
-  const result = await executeInSandbox(code);
+    const result = await executeInSandbox(code);
 
-  if (result.success) {
-    const output =
-      typeof result.result === "string"
-        ? result.result
-        : JSON.stringify(result.result, null, 2);
+    if (result.success) {
+      const output =
+        typeof result.result === "string"
+          ? result.result
+          : JSON.stringify(result.result, null, 2);
 
-    return {
-      content: [
-        {
-          type: "text",
-          text: output,
-        },
-      ],
-    };
-  } else {
-    return {
-      content: [
-        {
-          type: "text",
-          text: `Error: ${result.error}`,
-        },
-      ],
-      isError: true,
-    };
+      return {
+        content: [
+          {
+            type: "text",
+            text: output,
+          },
+        ],
+      };
+    } else {
+      return {
+        content: [
+          {
+            type: "text",
+            text: `Error: ${result.error}`,
+          },
+        ],
+        isError: true,
+      };
+    }
   }
+
+  throw new Error(`Unknown tool: ${name}`);
 });
 
 // ── Prompt: healthie_context ──────────────────────────────────────────────────
