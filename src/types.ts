@@ -100,8 +100,8 @@ return mutations;
 \`\`\`typescript
 const data = await healthie.query(\`
   query {
-    patients(first: 5) {
-      nodes { id firstName lastName }
+    users(offset: 0, should_paginate: true) {
+      id first_name last_name
     }
   }
 \`);
@@ -120,11 +120,20 @@ return { apptResults, patientResults, apptDetails };
 
 ## Healthie API Conventions
 
-- **Queries**: plural for lists (\`patients\`, \`appointments\`), singular for one (\`patient\`, \`appointment\`)
-- **Pagination**: cursor-based with \`first\`/\`after\` args, returns \`nodes\` and \`pageInfo\`
+- **Queries**: plural for lists (\`users\`, \`appointments\`), singular for one (\`user\`, \`appointment\`)
+- **Pagination**: offset-based with \`offset\`/\`should_paginate\` args (not cursor-based)
 - **Mutations**: return \`messages: [FieldError]\` — always check for errors
+- **Field casing**: snake_case for fields and args (e.g. \`first_name\`, \`other_party_id\`)
 - **Auth**: included automatically via the configured API key
 - **Environments**: ${config.envName}
+
+## Before writing GraphQL
+
+- **Always search first** when using an unfamiliar query or mutation: \`healthie.search("patient", { kind: "query" })\` to find the correct field name
+- **Always introspect input types** before mutations: \`healthie.introspect("createAppointmentInput")\` to get exact field names and types
+- **Always introspect return types** before selecting fields: \`healthie.introspect("Appointment")\` to see what fields exist
+- **Check enum values** before using string args that might be enums: search for the enum type and introspect it
+- **Never guess** field names, argument names, or enum values — the schema is your source of truth
 `;
 
 /** TypeScript type string for code hints in execute_healthie_code tool description */
