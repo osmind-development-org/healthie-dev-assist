@@ -126,6 +126,7 @@ return { apptResults, patientResults, apptDetails };
 - **Field casing**: snake_case for fields and args (e.g. \`first_name\`, \`other_party_id\`)
 - **Auth**: included automatically via the configured API key
 - **Environments**: ${config.envName}
+- **GraphQL API version** (header \`Healthie-GraphQL-API-Version\`): ${config.graphqlApiVersion}
 
 ## Before writing GraphQL
 

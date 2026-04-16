@@ -1,6 +1,7 @@
 {
   "staging": {
     "apiUrl": "https://staging-api.gethealthie.com/graphql",
-    "apiKey": "YOUR_STAGING_API_KEY"
+    "apiKey": "YOUR_STAGING_API_KEY",
+    "graphqlApiVersion": "2025-11-30"
   }
 }

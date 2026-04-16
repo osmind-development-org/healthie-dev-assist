@@ -11,8 +11,37 @@ export interface EnvConfig {
   apiUrl: string;
   /** API key — required for query/mutate, optional for schema-only operations */
   apiKey: string;
+  /** Value for the `Healthie-GraphQL-API-Version` header on GraphQL requests */
+  graphqlApiVersion: string;
   schemaPath: string;
   envName: string;
+}
+
+const DEFAULT_GRAPHQL_API_VERSION = "2025-11-30";
+
+function resolveGraphqlApiVersion(envEntry?: { graphqlApiVersion?: string }): string {
+  const fromEnv = process.env.HEALTHIE_GRAPHQL_API_VERSION?.trim();
+  if (fromEnv) return fromEnv;
+  const fromJson = envEntry?.graphqlApiVersion?.trim();
+  if (fromJson) return fromJson;
+  return DEFAULT_GRAPHQL_API_VERSION;
+}
+
+/** Headers for POST requests to the Healthie GraphQL HTTP endpoint. */
+export function buildHealthieGraphqlHeaders(
+  apiKey: string,
+  graphqlApiVersion: string,
+  options?: { authorizationSource?: boolean }
+): Record<string, string> {
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+    Authorization: `Basic ${apiKey}`,
+    "Healthie-GraphQL-API-Version": graphqlApiVersion,
+  };
+  if (options?.authorizationSource) {
+    headers.AuthorizationSource = "API";
+  }
+  return headers;
 }
 
 const API_URLS: Record<string, string> = {
@@ -36,6 +65,7 @@ function loadConfig(): EnvConfig {
       return {
         apiUrl: envEntry.apiUrl,
         apiKey: envEntry.apiKey,
+        graphqlApiVersion: resolveGraphqlApiVersion(envEntry),
         schemaPath,
         envName,
       };
@@ -54,7 +84,13 @@ function loadConfig(): EnvConfig {
     );
   }
 
-  return { apiUrl, apiKey, schemaPath, envName };
+  return {
+    apiUrl,
+    apiKey,
+    graphqlApiVersion: resolveGraphqlApiVersion(),
+    schemaPath,
+    envName,
+  };
 }
 
 export const config = loadConfig();
