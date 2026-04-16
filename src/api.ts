@@ -12,7 +12,7 @@ import {
   getNamedType,
 } from "graphql";
 import { loadSchema, loadSdl } from "./schema.js";
-import { config } from "../config.js";
+import { buildHealthieGraphqlHeaders, config } from "../config.js";
 
 // ── Type helpers ─────────────────────────────────────────────────────────────
 
@@ -325,11 +325,9 @@ async function executeGraphQL<T>(
 
   const response = await fetch(config.apiUrl, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Basic ${config.apiKey}`,
-      AuthorizationSource: "API",
-    },
+    headers: buildHealthieGraphqlHeaders(config.apiKey, config.graphqlApiVersion, {
+      authorizationSource: true,
+    }),
     body,
   });
 
