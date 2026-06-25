@@ -79,7 +79,7 @@ export async function regenerateSchema(): Promise<{ lines: number; path: string 
 
   const response = await fetch(config.apiUrl, {
     method: "POST",
-    headers: buildHealthieGraphqlHeaders(config.apiKey, config.graphqlApiVersion),
+    headers: buildHealthieGraphqlHeaders(config.apiKey, config.graphqlApiVersion, config.authorizationShard),
     body: JSON.stringify({ query: introspectionQuery }),
   });
 

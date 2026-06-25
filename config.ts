@@ -15,6 +15,8 @@ export interface EnvConfig {
   graphqlApiVersion: string;
   schemaPath: string;
   envName: string;
+  /** Shard authorization ID — required only if your data is in a shard environment */
+  authorizationShard?: string;
 }
 
 const DEFAULT_GRAPHQL_API_VERSION = "2025-11-30";
@@ -31,6 +33,7 @@ function resolveGraphqlApiVersion(envEntry?: { graphqlApiVersion?: string }): st
 export function buildHealthieGraphqlHeaders(
   apiKey: string,
   graphqlApiVersion: string,
+  authorizationShard?: string,
   options?: { authorizationSource?: boolean }
 ): Record<string, string> {
   const headers: Record<string, string> = {
@@ -40,6 +43,9 @@ export function buildHealthieGraphqlHeaders(
   };
   if (options?.authorizationSource) {
     headers.AuthorizationSource = "API";
+  }
+  if (authorizationShard) {
+    headers.AuthorizationShard = authorizationShard
   }
   return headers;
 }
@@ -68,6 +74,7 @@ function loadConfig(): EnvConfig {
         graphqlApiVersion: resolveGraphqlApiVersion(envEntry),
         schemaPath,
         envName,
+        authorizationShard: envEntry.authorizationShard || undefined,
       };
     }
   }
@@ -76,6 +83,7 @@ function loadConfig(): EnvConfig {
   // API key is optional — schema search/introspect work without it.
   // query() and mutate() will throw at call time if the key is missing.
   const apiKey = process.env.HEALTHIE_API_KEY ?? "";
+  const authorizationShard = process.env.HEALTHIE_AUTHORIZATION_SHARD || undefined;
 
   const apiUrl = API_URLS[envName];
   if (!apiUrl) {
@@ -90,6 +98,7 @@ function loadConfig(): EnvConfig {
     graphqlApiVersion: resolveGraphqlApiVersion(),
     schemaPath,
     envName,
+    authorizationShard
   };
 }
 

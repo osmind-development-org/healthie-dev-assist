@@ -1,15 +1,12 @@
 import {
-  GraphQLObjectType,
-  GraphQLInputObjectType,
   GraphQLEnumType,
-  GraphQLInterfaceType,
-  GraphQLUnionType,
-  GraphQLScalarType,
-  GraphQLNamedType,
   GraphQLField,
   GraphQLInputField,
-  isNamedType,
-  getNamedType,
+  GraphQLInputObjectType,
+  GraphQLInterfaceType,
+  GraphQLObjectType,
+  GraphQLScalarType,
+  GraphQLUnionType,
 } from "graphql";
 import { loadSchema, loadSdl } from "./schema.js";
 import { buildHealthieGraphqlHeaders, config } from "../config.js";
@@ -325,7 +322,7 @@ async function executeGraphQL<T>(
 
   const response = await fetch(config.apiUrl, {
     method: "POST",
-    headers: buildHealthieGraphqlHeaders(config.apiKey, config.graphqlApiVersion, {
+    headers: buildHealthieGraphqlHeaders(config.apiKey, config.graphqlApiVersion, config.authorizationShard, {
       authorizationSource: true,
     }),
     body,
