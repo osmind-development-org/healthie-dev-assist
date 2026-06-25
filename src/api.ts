@@ -1,18 +1,15 @@
 import {
-  GraphQLObjectType,
-  GraphQLInputObjectType,
   GraphQLEnumType,
-  GraphQLInterfaceType,
-  GraphQLUnionType,
-  GraphQLScalarType,
-  GraphQLNamedType,
   GraphQLField,
   GraphQLInputField,
-  isNamedType,
-  getNamedType,
+  GraphQLInputObjectType,
+  GraphQLInterfaceType,
+  GraphQLObjectType,
+  GraphQLScalarType,
+  GraphQLUnionType,
 } from "graphql";
 import { loadSchema, loadSdl } from "./schema.js";
-import { config } from "../config.js";
+import { buildHealthieGraphqlHeaders, config } from "../config.js";
 
 // ── Type helpers ─────────────────────────────────────────────────────────────
 
@@ -323,18 +320,11 @@ async function executeGraphQL<T>(
 
   const body = JSON.stringify({ query: operation, variables });
 
-  const headers: Record<string, string> = {
-    "Content-Type": "application/json",
-    Authorization: `Basic ${config.apiKey}`,
-    AuthorizationSource: "API",
-  };
-  if (config.authorizationShard) {
-    headers["AuthorizationShard"] = config.authorizationShard;
-  }
-
   const response = await fetch(config.apiUrl, {
     method: "POST",
-    headers,
+    headers: buildHealthieGraphqlHeaders(config.apiKey, config.graphqlApiVersion, config.authorizationShard, {
+      authorizationSource: true,
+    }),
     body,
   });
 

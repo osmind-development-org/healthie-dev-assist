@@ -8,7 +8,7 @@ import {
   GraphQLSchema,
   IntrospectionQuery,
 } from "graphql";
-import { config } from "../config.js";
+import { buildHealthieGraphqlHeaders, config } from "../config.js";
 
 let cachedSchema: GraphQLSchema | null = null;
 let cachedSdl: string | null = null;
@@ -77,17 +77,9 @@ export function invalidateCache(): void {
 export async function regenerateSchema(): Promise<{ lines: number; path: string }> {
   const introspectionQuery = getIntrospectionQuery();
 
-  const headers: Record<string, string> = {
-    "Content-Type": "application/json",
-    Authorization: `Basic ${config.apiKey}`,
-  };
-  if (config.authorizationShard) {
-    headers["AuthorizationShard"] = config.authorizationShard;
-  }
-
   const response = await fetch(config.apiUrl, {
     method: "POST",
-    headers,
+    headers: buildHealthieGraphqlHeaders(config.apiKey, config.graphqlApiVersion, config.authorizationShard),
     body: JSON.stringify({ query: introspectionQuery }),
   });
 
