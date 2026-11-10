@@ -1,7 +1,10 @@
 {
   "name": "healthie-dev-assist",
   "version": "1.0.0",
-  "description": "Healthie Dev Assist — Code Mode MCP Server",
+  "engines": {
+    "node": ">=22"
+  },
+  "description": "Healthie Dev Assist \u2014 Code Mode MCP Server",
   "type": "module",
   "scripts": {
     "start": "node dist/server.js",

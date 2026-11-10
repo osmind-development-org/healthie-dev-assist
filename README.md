@@ -7,7 +7,7 @@
 **MCP server for AI-powered Healthie API exploration**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-22c55e?style=flat-square)](LICENSE)
-[![Node.js](https://img.shields.io/badge/Node.js-v18+-339933?style=flat-square&logo=node.js&logoColor=white)](https://nodejs.org)
+[![Node.js](https://img.shields.io/badge/Node.js-v22+-339933?style=flat-square&logo=node.js&logoColor=white)](https://nodejs.org)
 [![MCP](https://img.shields.io/badge/MCP-Compatible-6366f1?style=flat-square)](https://modelcontextprotocol.io)
 
 *From 5–10 tool calls to 1–2. Schema-aware. Sandboxed. Instant.*
@@ -66,6 +66,8 @@ healthie.mutate(graphql: string, variables?: Record<string, unknown>) → any
 ## Quick Start
 
 ### 1. Clone and install
+
+Requires Node.js 22 or newer, on a current patch release of a supported line (22, 24 or 26). This fork dropped Node 18 and 20, which are end-of-life and do not receive security fixes. Check your version with `node --version` before installing.
 
 ```bash
 git clone https://github.com/healthie/healthie-dev-assist.git
