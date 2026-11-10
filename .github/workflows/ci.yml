@@ -1,0 +1,46 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-smoke:
+    name: Build and sandbox smoke (Node ${{ matrix.node }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # Supported lines only. check-latest resolves the newest published patch
+        # rather than a stale runner-cached one, so security releases are picked up.
+        node: ['22', '24', '26']
+    steps:
+      - uses: actions/checkout@v7.0.1
+
+      - uses: actions/setup-node@v7.0.0
+        with:
+          node-version: ${{ matrix.node }}
+          check-latest: true
+          cache: npm
+
+      - name: Record runtime versions
+        run: |
+          set -euo pipefail
+          node --version
+          npm --version
+
+      - run: npm ci
+
+      - name: Type check and build
+        run: npm run build
+
+      - name: Sandbox smoke test (no credentials)
+        run: npx tsx test/sandbox-smoke.ts
